@@ -78,7 +78,7 @@
 
 `git merge branchName //将branchName合并到当前所在的分支`
 
-==遇到冲突需要手动解决，并且`git commit -m "description"`后面不加文件名==
+==遇到冲突需要手动解决，并且`git commit -m "description"`后面不加文件名（冲突原因是两个分支在同一个文件的同一个位置有两套完全不同的修改）==
 
 ### 团队协作与跨团队协作
 
@@ -99,6 +99,11 @@
 #### 推送本地分支到远程仓库
 
 - `git push 别名 分支`
+- `git push <远程主机名> <本地分支名>:<远程分支名>`
+- `git push <远程主机名> <本地分支名> //本地分支名与远程分支名相同，省略冒号`
+- `git push origin //将当前分支推送到origin主机的对应分支`
+- ` git push -u origin master //此命令将本地的master分支推送到origin主机，同时指定origin为默认主机，后面就可以不加任何参数使用git push了。`
+- 
 
 #### 克隆远程仓库到本地
 
@@ -108,9 +113,9 @@
 
 - 
 
-#### 拉去远程库内容
+#### 拉取远程库内容
 
-
+- `git pull 别名 分支`
 
 
 
