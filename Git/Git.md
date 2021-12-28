@@ -58,6 +58,22 @@
 
 `git branch name //创建分支`
 
+`git branch //查看本地所有分支`
+
+`git branch -r //查看远程所有分支`
+
+`git branch -a //查看本地和远程所有分支`
+
+`git branch -f branchName //新建一个分支但不切换`
+
+`git branch -d branchName //删除本地分支`
+
+`git branch -d -r branchName //删除远程分支，删除后需要推动到服务器，git push origin :branchName,-D表示强制删除`
+
+`git branch -m oldbranch newbranch //重命名分支，-M强制重命名，如果重命名分支需要：1.删除远程修改分支 2.push本地新分支名到远程`
+
+`git checkout -b branchName //新建并切换新分支`
+
 `git checkout branchName //切换分支`
 
 `git merge branchName //将branchName合并到当前所在的分支`
@@ -86,11 +102,11 @@
 
 #### 克隆远程仓库到本地
 
-
+- 
 
 #### 邀请加入团队
 
-
+- 
 
 #### 拉去远程库内容
 
