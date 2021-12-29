@@ -2,7 +2,7 @@
 
 ## Git概述
 
-- 免费、开源、分布式版本控制系统
+- 免费、开源、分布式版本控制系统  
 
 - 性能优于Subversion、CVS、Perforce和ClearCase
 
@@ -42,6 +42,8 @@
 
 `git log //查看版本信息（完整信息包括：完整的版本号和提交的时间以及提交作者）`
 
+`git log --graph --pretty=format:"%h %s"`
+
 ### 穿梭版本
 
 `git reflog --hard 版本号 //穿梭到版本号对应的版本`
@@ -80,6 +82,28 @@
 
 ==遇到冲突需要手动解决，并且`git commit -m "description"`后面不加文件名（冲突原因是两个分支在同一个文件的同一个位置有两套完全不同的修改）==
 
+### git rebase,这一块儿有待加强
+
+==git rebase==使提交记录变得更简洁
+
+1. 将多条记录合并为一条，让自己的提交记录变得更简单
+   合并记录时，建议不要合并已经push到仓库的
+
+   `git rebase -i  HEAD~n`
+
+   `git rebase -i versionNode`
+
+2. 消除分支
+   `git rebase main //分支上操作这个`
+   `git merge branchName //主干上操作这个`
+
+3. 分叉
+   `git fetch`
+
+   `git rebase`
+
+
+
 ### 团队协作与跨团队协作
 
 # Github
@@ -98,30 +122,39 @@
 
 #### 推送本地分支到远程仓库
 
-- `git push 别名 分支`
+- `git push 别名/链接 分支`
 - `git push <远程主机名> <本地分支名>:<远程分支名>`
 - `git push <远程主机名> <本地分支名> //本地分支名与远程分支名相同，省略冒号`
 - `git push origin //将当前分支推送到origin主机的对应分支`
 - ` git push -u origin master //此命令将本地的master分支推送到origin主机，同时指定origin为默认主机，后面就可以不加任何参数使用git push了。`
-- 
+- `git add. || git commit -m "说明" || git remote add origin 仓库链接地址 || git pull origin master// 首次提交要git pull 一下 || git push -u origin main`
 
 #### 克隆远程仓库到本地
 
-- 
+- `git clone 链接 //公共库放开读权限`
+- ==clone会做如下操作：1、拉去代码。2、初始化本地仓库。3、创建别名。==
 
 #### 邀请加入团队
 
-- 
+- github操作
 
 #### 拉取远程库内容
 
-- `git pull 别名 分支`
+- `git pull 远程仓库地址别名 远程分支名`
 
+#### 跨团队
 
+`Fork + create pull request + Pull request`
+
+#### SSH免密登录
+
+`ssh-keygen -t rsa -C email`
 
 # Gitee码云
 
+==Gitee与Git极为类似==
 
+==在Goland中的操作也一样==
 
 # GitLab
 
