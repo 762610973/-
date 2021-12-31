@@ -104,6 +104,18 @@
 
 
 
+### 版本回滚
+
+`git reset --hard HEAD //回退到上个版本`
+
+`git reset --hard HEAD~n //回退到n次提交之前`
+
+`git reset --hard commit _id 回退快进到指定的commit的哈希码`
+
+`git reset HEAD file //取消暂存file`
+
+`git checkout--file // 撤销之前的修改`
+
 ### 团队协作与跨团队协作
 
 # Github
