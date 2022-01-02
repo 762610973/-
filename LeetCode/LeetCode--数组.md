@@ -47,7 +47,8 @@ func searchInsert(nums []int, target int) int {
 			r = mid - 1
 		}
 	}
-	return l //或者是return mid + 1，寻找的是>=target值的第一个元素的下标
+	return l 
+    // 或者是return mid + 1，寻找的是>=target值的第一个元素的下标
     // 本题的关键点是返回值的取值
 ```
 
@@ -179,6 +180,57 @@ func isPerfectSquare(num int) bool {
 
 
 ## 移除元素
+
+### [27. 移除元素](https://leetcode-cn.com/problems/remove-element/)
+
+> 给你一个数组 nums 和一个值 val，你需要 原地 移除所有数值等于 val 的元素，并返回移除后数组的新长度。
+>
+> 不要使用额外的数组空间，你必须仅使用 O(1) 额外空间并 原地 修改输入数组。
+>
+> 元素的顺序可以改变。你不需要考虑数组中超出新长度后面的元素。
+>
+
+```go
+func removeElement(nums []int, val int) int {
+	// 暴力破解
+	l := len(nums)
+	for i := 0 ;i < l ; i ++ {//遍历数组元素
+		if nums[i] == val {//匹配成功，发现需要移除的元素
+			for j := i ;j < l-1 ; j ++ {//循环更新数组
+				nums[j] = nums[j+1]//这里要保证的是最后一个元素不超出范围，但是又能够
+			}
+			i --//下标i以后的元素向前移动一位，为了使下次循环指向的元素是正确的，所以需要更新i
+				//i--是考虑到val可能出现多次，如果有多次，在第一次之后，不进行i--
+				//那么之后i会更新到下一个，可是没更新前的i被后面那个相同的值替代了，
+			l --//移除一位元素，长度要减一
+		}
+
+	}
+	return l
+}
+func removeElement(nums []int, val int) int {
+	//双指针法（快慢指针）：快指针负责遍历数组，寻找和val不相等的元素，慢指针用来记录新数组的长度，下面的写法是利用了Go的for range语法糖，没有明显的体现快指针++
+	var res int = 0
+	for _,m := range nums {
+		if m != val {//不需要移除
+			nums[res] = m//赋值即可
+			res ++//慢指针 +1
+		}
+	}
+	return res
+}
+func removeElement(nums []int, val int) int {
+    var  res = 0
+    l := len(nums)
+    for i:= 0;i <l;i++ {
+        if nums[i] != val {
+            nums[res] = nums[i]
+            res ++
+        }
+    }
+    return res
+}
+```
 
 
 
