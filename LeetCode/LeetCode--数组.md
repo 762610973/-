@@ -188,7 +188,8 @@ func isPerfectSquare(num int) bool {
 > 不要使用额外的数组空间，你必须仅使用 O(1) 额外空间并 原地 修改输入数组。
 >
 > 元素的顺序可以改变。你不需要考虑数组中超出新长度后面的元素。
->
+
+
 
 ```go
 func removeElement(nums []int, val int) int {
@@ -222,7 +223,7 @@ func removeElement(nums []int, val int) int {
 func removeElement(nums []int, val int) int {
     var  res = 0
     l := len(nums)
-    for i:= 0;i <l;i++ {
+    for i:= 0;i < l;i++ {
         if nums[i] != val {
             nums[res] = nums[i]
             res ++
@@ -232,7 +233,163 @@ func removeElement(nums []int, val int) int {
 }
 ```
 
+### [26. 删除有序数组中的重复项](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-array/)
 
+> 给你一个有序数组 nums ，请你 原地 删除重复出现的元素，使每个元素 只出现一次 ，返回删除后数组的新长度。
+>
+> 不要使用额外的数组空间，你必须在 原地 修改输入数组 并在使用 O(1) 额外空间的条件下完成
+
+```go
+func removeDuplicates(nums []int) int {
+	l := len(nums)
+	if l == 0 {
+		return 0
+	}
+	slow := 0
+	for fast:= 1; fast < l; fast++ { 
+    //i作为快指针，这里从1开始，因为快慢指针在最一开始肯定是相等的
+		if nums[fast] != nums[slow] {
+    //快慢指针不相等，慢指针向后移动一位，然后快指针赋值
+			slow ++
+			nums[slow] = nums[fast]
+		}
+	}
+	return slow+1
+	//时间复杂度：O(n)，其中 n是数组的长度。快指针和慢指针最多各移动n次。
+	//空间复杂度：O(1)。只需要使用常数的额外空间。
+}
+```
+
+### [283. 移动零](https://leetcode-cn.com/problems/move-zeroes/)
+
+> 给定一个数组 `nums`，编写一个函数将所有 `0` 移动到数组的末尾，同时保持非零元素的相对顺序。
+
+- 示例 
+
+  ```
+  输入: [0,1,0,3,12]
+  输出: [1,3,12,0,0]
+  ```
+
+- 说明
+  1. 必须在原数组上操作，不能拷贝额外的数组。
+  2. 尽量减少操作次数。
+
+```go
+// 时间复杂度：O(n)O(n)O(n)，其中 nnn 为序列长度。每个位置至多被遍历两次。
+// 空间复杂度：O(1)O(1)O(1)。只需要常数的空间存放若干变量。
+package main
+func moveZeroes1(nums []int)  {
+	l := len(nums)
+	for fast,slow := 0,0; fast < l; fast ++ {
+		if nums[fast] != 0 {//fast是快指针，用来寻找不为0的元素
+			//找到的话就交换快慢指针对应的元素，然后让慢指针++，这里的慢指针是负责存储结果的     
+			nums[slow], nums[fast] = nums[fast], nums[slow]
+			slow ++
+		}
+	}
+}
+//另一种写法，值得借鉴
+func moveZeroes(nums []int) {
+	left, right, n := 0, 0, len(nums)
+	for right < n {
+		if nums[right] != 0 {
+			nums[left], nums[right] = nums[right], nums[left]
+			left++
+		}
+		right++
+	}
+}
+//另一种写法
+func moveZeroes(nums []int) {
+// 这里是先利用移除元素的办法，将所有非0元素移除，顺带记录0的个数，然后再循环将最后的几个数置0
+	slow := 0
+	for _,fast := range nums {
+		if fast != 0 {
+			nums[slow] = fast
+			slow ++
+		}
+	}
+	for slow < len(nums) {
+		nums[slow] = 0
+		slow ++
+	}
+}
+```
+
+### [844. 比较含退格的字符串](https://leetcode-cn.com/problems/backspace-string-compare/)
+
+> 给定 `s` 和 `t` 两个字符串，当它们分别被输入到空白的文本编辑器后，请你判断二者是否相等。`#` 代表退格字符。
+>
+> 如果相等，返回 `true` ；否则，返回 `false` 。
+>
+> **注意：**如果对空文本输入退格字符，文本继续为空。
+
+- 由于 # 号只会消除左边的一个字符，所以对右边的字符无影响，所以我们选择从后往前遍历 SSS，TTT 字符串。
+
+```go
+（用的是栈）
+func build (str string) string {
+	var s []byte
+	for i:= range str {
+		if str[i] != '#' {
+			s = append(s, str[i])//入栈
+		} else if len(s) > 0 {
+			s = s[:len(s) - 1]//去除栈顶元素
+		}
+	}
+	return string(s)//类型转换之后再返回
+	//时间复杂度：O(N+M)，其中 N 和 M 分别为字符串 S 和 T 的长度。我们需要遍历两字符串各一次。
+	//空间复杂度：O(N+M)，其中 N 和 M 分别为字符串 S 和 T 的长度。主要为还原出的字符串的开销。
+}
+func backspaceCompare(s string, t string) bool {
+	return build(s) == build(t)
+}
+//双指针法（不是快慢指针）
+func backspaceCompare(s string , t string) bool {
+	skipS,skipT := 0,0
+	i ,j:= len(s)-1,len(t)-1
+	for i >=0 || j >= 0 {
+        //前面的两个for循环是找出普通的字符进行比较，当前字符是#或者#的数量>0都可以向前推进，然后再根据现在i和j的长度，将它们作为索引比较对应的字符
+        //意思是当前是#或者#数量>0都不用比较，因为可以做退格处理，此时也要注意更新长度,比较完#相关的之后再开始比较剩下的字符了
+        //循环的条件当然是两个的长度>=0
+		for i >=0 {
+			if s[i] == '#' { //当前字符为#,数量+1，指针向前移动一位
+				skipS++
+				i--
+			} else if skipS > 0 { //当前字符不是#，#数量-1，继续向前移动
+				skipS--
+				i--
+			} else {//普通字符，直接退出当前循环，去下一轮
+				break
+			}
+		}
+		for j >= 0 {
+			if t[j] == '#' {
+				skipT++
+				j--
+			} else if skipT > 0 {
+				skipT--
+				j--
+			} else {
+				break
+			}
+		}
+		if i >= 0 && j >= 0 { //两个的长度都>=0,依次比较
+			if s[i] != t[j] {
+				return false//不相等直接返回false
+			}
+		} else if i >= 0 || j >= 0 {//有一个小于0，直接返回false
+			return false
+		}
+		i--
+		j--
+	}
+	return true
+}
+//时间复杂度是O(m+n)
+//空间复杂度是O(1)
+```
 
 
 
