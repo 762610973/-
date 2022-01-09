@@ -395,17 +395,421 @@ func backspaceCompare(s string , t string) bool {
 
 ## 有序数组的平方
 
+### [977. 有序数组的平方](https://leetcode-cn.com/problems/squares-of-a-sorted-array/)
 
+> 给你一个按 非递减顺序 排序的整数数组 nums，返回 每个数字的平方 组成的新数组，要求也按 非递减顺序 排序。
+
+```go
+package main
+func sortedSquares(nums []int) []int {
+	// 双指针法，数组的最大值一定是第一个或者最后一个，不可能是其他值
+	//一个指向头，一个指向尾
+	// 如果A[i] * A[i] < A[j] * A[j] 那么result[k--] = A[j] * A[j];
+	// 如果A[i] * A[i] >= A[j] * A[j] 那么result[k--] = A[i] * A[i];
+	// 头大于尾，新数组的最后一个位置就是头，此时头向后移动，比较第二个和最后一个
+	// 头小于尾，新数组的最后一个位置就是尾，尾向前移动一个，比较第一个和倒数第二个
+	l := len(nums)
+	i,j,k := 0,l-1,l-1
+	//i指向数组的最左边，j指向最右边
+	//k是新数组的索引
+	res := make([]int, l)
+	for i <= j { //这里的i<=j，是要处理两个元素
+		lm,jm := nums[i]*nums[i], nums[j]*nums[j]
+		if lm > jm {
+			res[k] = lm
+			i ++
+		} else {
+			res[k] = jm
+			j --
+		}
+		k--//更新k的值，下次继续赋值，这里的k是从最后开始的
+	}
+	return res
+	//时间复杂度是O(n)
+}
+```
 
 
 
 ## 长度最小的子数组
 
+### 模板
 
+```
+// 模板
+for () {
+    // 将新进来的右边的数据，计算进来
+    // 更新数据
+
+    // 判断窗口数据是否不满足要求了
+    while (窗口数据不满要求 && left < arrSize) {
+        // 移除left数据，更新窗口数据
+        left++;    
+    }
+    right++;
+}
+```
+
+
+
+### [209. 长度最小的子数组](https://leetcode-cn.com/problems/minimum-size-subarray-sum/)
+
+> 给定一个含有 n 个正整数的数组和一个正整数 target 。
+>
+> 找出该数组中满足其和 ≥ target 的长度最小的 连续子数组 [numsl, numsl+1, ..., numsr-1, numsr] ，并返回其长度。如果不存在符合条件的子数组，返回 0 。
+
+#### 暴力破解
+
+```go
+package main
+import "math"
+func minSubArrayLen(target int, nums []int) int {
+    length := len(nums)
+    if length == 0 {
+        return 0
+    }
+    res := math.MaxInt32
+    for i := 0; i < length;i++ {
+        sum := 0
+        for j := i; j <length; j++ {
+            sum += nums[j]
+            if sum >= target {
+                res = min(ans,j - i + 1)
+                break
+            }
+        }
+    }
+    if ans == math.MaxInt32 {
+        return 0
+    }
+    return res
+}
+func min(a,b int) int {
+    if a < b {
+        return a
+    } 
+    return b
+}
+//时间复杂度：O(n*2)
+//空间复杂度: O(1)
+```
+
+#### 滑动窗口
+
+```go
+func minSubArrayLen(target int, nums[int]) int {
+    length := len(nums)
+    if length == 0 {
+        return 0
+    }
+    ans := math.MaxInt32//设置为最大值，是为了确保第一次比较的时候ans能成为较小
+    //的那个或者是不存在，如果设置为0什么的第一次比较会丧失真的那个
+    start, end := 0, 0
+    sum := 0 
+    for end < length {
+        sum += nums[end]
+        for sum >= target {//找到符合的子数组，更新子数组的最小长度
+            ans = min(ans,end-start+1)
+            sum -= nums[start]//这里相减是因为start要右移了
+            start++//start右移
+        }
+        end ++ //sum<target,end后移继续寻找
+    }
+    if ans == math.MathInt32 {
+        return 0
+    }
+    return ans
+}
+func min(a,b int) int {
+    if a < b {
+        return a
+    }
+   	return b
+}
+时间复杂度：O(n)，其中 n 是数组的长度。指针 start 和 end 最多各移动 n 次。
+空间复杂度：O(1)
+```
+
+### [904. 水果成篮](https://leetcode-cn.com/problems/fruit-into-baskets/)
+
+> 你正在探访一家农场，农场从左到右种植了一排果树。这些树用一个整数数组 fruits 表示，其中 fruits[i] 是第 i 棵树上的水果 种类 。
+>
+> 你想要尽可能多地收集水果。然而，农场的主人设定了一些严格的规矩，你必须按照要求采摘水果：
+>
+>     你只有 两个 篮子，并且每个篮子只能装 单一类型 的水果。每个篮子能够装的水果总量没有限制。
+>     你可以选择任意一棵树开始采摘，你必须从 每棵 树（包括开始采摘的树）上 恰好摘一个水果 。采摘的水果应当符合篮子中的水果类型。每采摘一次，你将会向右移动到下一棵树，并继续采摘。
+>     一旦你走到某棵树前，但水果不符合篮子的水果类型，那么就必须停止采摘。
+>
+> 给你一个整数数组 fruits ，返回你可以收集的水果的 最大 数目。
+
+- 问题转化为寻找最长的子序列，但是类型最多包含两种，例如2,3,2,2,3,4那么最长的就是从2开始到最后一个3，只包含两种类型
+
+```go
+package main
+func totalFruit(fruits []int) int {
+    if len(fruits) == 0 {
+        return 0
+    }
+    //问题是求数组中包含两个值的最大连续子序列
+    hashM := map[int]int{}
+    //用map记录不同类型的水果篮子，以及水果篮子中水果的个数
+    res := 0
+    //记录每次得到的局部最大长度
+    for start,end := 0,0; end < len(fruits); end++ {
+        hashM[fruits[end]]++//这种类型的水果数量+1
+        //遍历水果数组
+        for start <= end && len(hashM) > 2 {
+            //此时水果的种类>2，说明盘子中进入了第三种水果
+            hashM[fruits[start]]--
+            if hashM[fruits[start]] == 0 {
+                delete(hashM,fruits[start])
+            }
+            start++
+        }
+        if res < end-start+1 {
+            //将res更新为最大值
+            res = end-start+1
+        }
+    }
+    return res
+}
+    //时间复杂度：O(N)，其中 N 是 tree 的长度。
+    //空间复杂度：O(N)。
+```
+
+
+
+### [76. 最小覆盖子串](https://leetcode-cn.com/problems/minimum-window-substring/)
+
+> 给你一个字符串 `s` 、一个字符串 `t` 。返回 `s` 中涵盖 `t` 所有字符的最小子串。如果 `s` 中不存在涵盖 `t` 所有字符的子串，则返回空字符串 `""` 。
+
+```go
+func minWindow(s string, t string) string {
+    if s == "" || t == "" {
+        return ""
+    }
+    tMap,cnt := map[byte]int{},map[byte]int{}//tMap用来存储t的每个元素以及相应的个数，cnt用来存储s中已有的元素以及出现的次数
+    for i := 0; i < len(t); i++ {
+        tMap[t[i]]++//将t的每个元素及个数依次赋给tMap
+    }
+    sLen := len(s)
+    length := math.MaxInt32
+    ansL,ansR := -1,-1
+    //这里是将匿名函数赋值给变量
+    check := func() bool {
+        for k,v := range tMap {
+            if cnt[k] < v {
+                //判断k是否存在于cnt当中，并且个数是否小于tMap中的k的个数
+                return false
+            }
+        }
+        return true //只要上面的不出现false，就是true
+    }
+    for left,right := 0,0;right < sLen; right++ {//遍历字符串s
+        if right < sLen && tMap[s[right]] > 0 {//tMap中存在s[right]再添加，也就是cnt只存储tMap中存在的
+            cnt[s[right]]++//将扩展指针指着的元素加入到cnt当中
+        }
+        for check() && left <= right {//缩小子串的范围
+            if right-left+1 < length {//取最小的
+                length = right-left + 1
+                ansL,ansR = left,left + length//更新最终的l，r
+            }
+            //去除重复项，缩小范围
+            if _,ok := tMap[s[left]]; ok {//如果tMap中存在s[left]
+                cnt[s[left]] -= 1//cnt当中的s[left] --
+            }
+            left++//left向右移
+        }
+    }
+    if ansL == -1 {
+        return ""
+    }
+    return s[ansL:ansR] 
+}
+```
 
 
 
 ##  螺旋矩阵 II
+
+### [59. 螺旋矩阵 II](https://leetcode-cn.com/problems/spiral-matrix-ii/)
+
+> 给你一个正整数 `n` ，生成一个包含 `1` 到 `n*2` 所有元素，且元素按顺时针顺序螺旋排列的 `n x n` 正方形矩阵 `matrix` 。
+
+```go
+func generateMatrix(n int) [][]int {
+    num := 1
+    high, low := 0,n-1
+    left, right := 0,n-1
+    tar := n*n
+    matrix := make([][]int,n)
+    for i := 0; i < n; i++ {
+        matrix[i] = make([]int, n)
+    }
+    for num <= tar {
+        for i := left; i <= right; i++ {
+            matrix[high][i] = num
+            num++
+        }
+        high++
+        for i := high; i <= low; i++ {
+            matrix[i][right] = num
+            num++
+        } 
+        right--
+        for i := right; i >= left; i-- {
+            matrix[low][i] = num
+            num++
+        }
+        low--
+        for i := low;i >= high; i-- {
+            matrix[i][left] = num
+            num++
+        }
+        left++
+    } 
+    return matrix
+}
+//时间复杂度是O(mn)
+//空间复杂度是O(1)
+```
+
+### [54. 螺旋矩阵](https://leetcode-cn.com/problems/spiral-matrix/)
+
+> 给你一个 `m` 行 `n` 列的矩阵 `matrix` ，请按照 **顺时针螺旋顺序** ，返回矩阵中的所有元素。
+
+- 注：最大值在右下角，排列是按照从左到右，从上到下递增排列的
+
+```go
+func spiralOrder(matrix [][]int) []int {
+	n := len(matrix)//列
+	m := len(matrix[0])//行
+	index := 0//返回的数组的下标
+	end := m*n//一共m*n个数
+	low,high := 0,n-1//上边界、下边界
+	left,right := 0,m-1//左边界、右边界
+	res := make([]int,end)//需要返回的数组
+	for index < end  {
+		//最上排从左到右
+		for i := left; i <= right; i++ {
+			if index < end {//这一步必须判断，在外层的for index < end 这一步，进入之后，index还会增长
+				res[index] = matrix[high][i]
+				index++
+			}
+		}
+		high++//减少一行
+        //最右列从上到下
+		for i := high;i <= low; i++ {
+			if index < end {
+				res[index] = matrix[i][right]
+				index++
+			}
+		}
+		right--//减少一列
+        //最下排，从右往左
+		for i := right;i >= left; i-- {
+			if index < end {
+				res[index] = matrix[low][i]
+				index++
+			}
+		}
+		low--
+        //最左列，从下往上
+		for i := low; i >= high; i-- {
+			if index < end {
+				res[index] = matrix[i][left]
+				index++
+			}
+		}
+		left++
+	}
+	return res
+}
+```
+
+### [剑指 Offer 29. 顺时针打印矩阵](https://leetcode-cn.com/problems/shun-shi-zhen-da-yin-ju-zhen-lcof/)
+
+> 输入一个矩阵，按照从外向里以顺时针的顺序依次打印出每一个数字。
+
+```go
+func spiralOrder(matrix [][]int) []int {
+	m := len(matrix)
+	if m == 0 {
+		return nil
+	}
+	n := len(matrix[0])
+	if n == 0 {
+		return nil
+	}
+	index := 0
+	end := m * n
+	high,low := 0,m-1
+	left,right := 0,n-1
+	res := make([]int,end)
+	for index < end  {
+		//最上排从左到右
+		for i := left; i <= right; i++ {
+			if index < end {
+				res[index] = matrix[high][i]
+				index++
+			}
+		}
+		high++
+		for i := high;i <= low; i++ {
+			if index < end {
+				res[index] = matrix[i][right]
+				index++
+			}
+		}
+		right--
+		for i := right;i >= left; i-- {
+			if index < end {
+				res[index] = matrix[low][i]
+				index++
+			}
+		}
+		low--
+		for i := low; i >= high; i-- {
+			if index < end {
+				res[index] = matrix[i][left]
+				index++
+			}
+		}
+		left++
+	}
+	return res
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
