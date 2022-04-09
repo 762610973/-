@@ -1,4 +1,4 @@
-# Git
+#  Git
 
 ## Git概述
 
@@ -167,8 +167,4 @@
 ==Gitee与Git极为类似==
 
 ==在Goland中的操作也一样==
-
-# GitLab
-
-
 

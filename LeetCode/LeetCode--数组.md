@@ -276,8 +276,8 @@ func removeDuplicates(nums []int) int {
   2. 尽量减少操作次数。
 
 ```go
-// 时间复杂度：O(n)O(n)O(n)，其中 nnn 为序列长度。每个位置至多被遍历两次。
-// 空间复杂度：O(1)O(1)O(1)。只需要常数的空间存放若干变量。
+// 时间复杂度：O(n)，其中 n 为序列长度。每个位置至多被遍历两次。
+// 空间复杂度：O(1)。只需要常数的空间存放若干变量。
 package main
 func moveZeroes1(nums []int)  {
 	l := len(nums)
@@ -780,6 +780,49 @@ func spiralOrder(matrix [][]int) []int {
 	return res
 }
 ```
+
+### [189.轮转数组]()
+
+> 给你一个数组，将数组中的元素向右轮转 k 个位置，其中 k 是非负数。
+
+```go
+package main
+func rotate(nums []int, k int)  {
+	length := len(nums)
+	k = k % length
+	ans := append(nums[length-k:],nums[:length-k]...)
+	copy(nums,ans)
+}
+```
+
+### [36.有效的数独](https://leetcode-cn.com/problems/valid-sudoku/solution/you-xiao-de-shu-du-by-leetcode-solution-50m6/)
+
+> 请你判断一个9x9的数独是否有效。根据规则 ，验证已经填入的数字是否有效即可。 
+
+```go
+package main
+func isValidSudoku(board [][]byte) bool {
+	var rows, columns [9][9]int//九行九列
+	var subboxs [3][3][9]int //横着数三个块，竖着也是三个，然后每一个块有九个数字
+	for i,row := range board {//此时row是切片，代表着每一行
+		for j,c := range row {//从第一行，第一列开始
+			if c == '.' {
+				continue
+			}
+			index := c-'1'//index表示索引，因为数组索引是从0开始的，所以所有的数字都要-1
+			rows[i][index]++
+			columns[j][index]++
+			subboxs[i/3][j/3][index]++
+			if rows[i][index] > 1 || columns[j][index] > 1 || subboxs[i/3][j/3][index]>1 {
+				return false
+			}
+		}
+	}
+	return true
+}
+```
+
+
 
 
 

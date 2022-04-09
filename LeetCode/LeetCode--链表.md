@@ -440,17 +440,18 @@ func reverseList(head *ListNode) *ListNode {
 	}
 	return pre
 }
- //  时间复杂度：O(n)，其中 n 是链表的长度。需要遍历链表一次。
-//    空间复杂度：O(1)。
-// 递归法
+//  时间复杂度：O(n)，其中 n 是链表的长度。需要遍历链表一次。
+//  空间复杂度：O(1)。
+//  递归法
 func reverseList(head *ListNode) *ListNode {
     return help(nil, head)
 }
-func help(pre, head *ListNode)*ListNode{
+
+func help(pre, head *ListNode) *ListNode {
     if head == nil {
         return pre
     }
-    tmp := head.Next//临时存储
+    tmp := head.Next //临时存储
     head.Next = pre
     return help(head, tmp)
 }
@@ -744,7 +745,83 @@ func detectCycle(head *ListNode) *ListNode {
 }
 ```
 
+### [21. 合并两个有序链表](https://leetcode-cn.com/problems/merge-two-sorted-lists/)
 
+> 将两个升序链表合并为一个新的 **升序** 链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。 
+
+```go
+//递归法，很巧妙
+func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
+    if list1 == nil {
+        return list2
+    } else if list2 == nil {
+        return list1
+    } else if list1.Val < list2.Val {
+        list1.Next = mergeTwoLists(list1.Next,list2)
+        return list1
+    } else {
+        lsit2.Next = mergeTwoLists(list1,list2.Next)
+        return list2
+    }
+}
+// 时间复杂度O(m+n)
+// 空间复杂度O(m+n)
+func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
+	ans := &ListNode{}//要返回的结果
+	cur := ans//用于遍历
+	for list1 != nil && list2 != nil {
+		if list1.Val < list2.Val {
+			cur.Next = list1 //list1的Val小于list2的，将当前结点放入结果链表中
+			list1 = list1.Next //节点后移
+		} else {
+			cur.Next = list2
+			list2 = list2.Next
+		}
+		cur = cur.Next //用于遍历的指针后移
+	}
+    //考虑到两个链表长度不一样，所以要接着判断
+	if list1 != nil {
+		cur.Next = list1
+	} else {
+		cur.Next  = list2
+	}
+	return ans.Next
+}
+//时间复杂度 O(m+n)
+//空间复杂度 O(1)
+```
+
+### [链表求和]()
+
+> 给定两个用链表表示的整数，每个节点包含一个数位，这些数为是反向存放的，也就是个位排在链表首部，编写函数对这两个整数求和，并用链表形式返回结果
+
+```go
+package main
+func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
+	node := &ListNode{}
+	result := node
+	t := 0 // 大于10的要进1
+	for l1 != nil || l2 != nil {
+		num := t//这一步比较巧妙
+		if l1 != nil {
+			num += l1.Val
+			l1 = l1.Next
+		}
+		if l2 != nil {
+			num += l2.Val
+			l2 = l2.Next
+		}
+		// 处理节点
+		node.Next = &ListNode{Val: num % 10} // 位数对应的数字
+		node = node.Next
+		t = num / 10 // 逢十进一
+	}
+	if t > 0 { // 进1的要处理干净，补位
+		node.Next = &ListNode{t,nil}
+	}
+	return result.Next
+}
+```
 
 
 
